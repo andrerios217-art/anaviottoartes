@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="720" viewBox="0 0 900 720">
+  <rect width="900" height="720" fill="#fff7ec"/>
+  <ellipse cx="450" cy="480" rx="300" ry="95" fill="#8b5e3c"/>
+  <ellipse cx="450" cy="455" rx="250" ry="65" fill="#b77a4b"/>
+  <path d="M420 330h80l35 135H385z" fill="#f7e3c4"/>
+  <path d="M325 315c30-95 220-95 250 0 12 40-20 78-75 78H400c-55 0-87-38-75-78z" fill="#c96f35"/>
+  <circle cx="385" cy="315" r="16" fill="#fff7ec"/>
+  <circle cx="465" cy="292" r="18" fill="#fff7ec"/>
+  <circle cx="525" cy="330" r="14" fill="#fff7ec"/>
+  <path d="M610 180c-35 40 35 55 0 95s35 55 0 95" stroke="#756658" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <text x="450" y="625" font-family="Georgia, serif" font-size="43" text-anchor="middle" fill="#2f3a22">Incensário cogumelo</text>
+</svg>

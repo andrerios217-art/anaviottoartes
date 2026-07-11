@@ -1,0 +1,156 @@
+:root {
+  --bg: #fff7ec;
+  --card: #fffdf8;
+  --green: #2f3a22;
+  --soft: #756658;
+  --line: rgba(85,98,55,.18);
+  --shadow: 0 18px 48px rgba(72,50,30,.10);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: #2d241c;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(255,247,236,.94);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+}
+
+.top {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+h1 {
+  margin: 0;
+  color: var(--green);
+  font-size: 22px;
+}
+
+main {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px 20px 60px;
+}
+
+.grid {
+  display: grid;
+  gap: 18px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+  padding: 22px;
+}
+
+.card h2 {
+  margin: 0 0 16px;
+  color: var(--green);
+  font-size: 20px;
+}
+
+label {
+  display: block;
+  font-weight: 800;
+  color: var(--green);
+  margin: 14px 0 6px;
+  font-size: 14px;
+}
+
+input, textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px 14px;
+  font: inherit;
+  background: #fff;
+  color: #2d241c;
+}
+
+textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.btn {
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 18px;
+  font-weight: 900;
+  cursor: pointer;
+  background: var(--green);
+  color: #fff;
+  text-decoration: none;
+  display: inline-flex;
+}
+
+.btn.secondary {
+  background: #fff8ed;
+  color: var(--green);
+  border: 1px solid var(--line);
+}
+
+.btn.danger {
+  background: #8b2f2f;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.status {
+  color: var(--soft);
+  font-size: 14px;
+  margin-bottom: 14px;
+}
+
+.item {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 16px;
+  margin: 12px 0;
+  background: rgba(255,247,236,.45);
+}
+
+.preview {
+  max-width: 220px;
+  max-height: 160px;
+  object-fit: cover;
+  border-radius: 14px;
+  display: block;
+  margin: 10px 0;
+  border: 1px solid var(--line);
+}
+
+small { color: var(--soft); }
+
+@media (max-width: 760px) {
+  .row { grid-template-columns: 1fr; }
+  .top { align-items: start; flex-direction: column; }
+}
