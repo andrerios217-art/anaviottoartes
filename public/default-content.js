@@ -1,90 +1,201 @@
 window.DEFAULT_CONTENT = {
-  site: {
-    brandName: "Ana Viotto Artesanato",
-    domain: "https://anaviottoartes.com.br",
-    logo: "/assets/logo.svg",
-    whatsappDisplay: "(11) 94971-1535",
-    whatsappNumber: "5511949711535",
-    whatsappMessage: "Olá, Ana! Vim pelo site e gostaria de fazer uma encomenda.",
-    instagram: "https://www.instagram.com/_anaviottoartes",
-    instagramHandle: "@_anaviottoartes",
-    gaId: "G-PEHV8TH4PG"
+  "schemaVersion": 2,
+  "theme": {
+    "pink": "#ef7fa4",
+    "pinkStrong": "#e95f8f",
+    "pinkLight": "#ffe4ec",
+    "green": "#dfecc0",
+    "greenStrong": "#b7cc87",
+    "cream": "#fff8ed",
+    "brown": "#6b5147",
+    "text": "#4c3b35",
+    "soft": "#8c746d"
   },
-  seo: {
-    title: "Ana Viotto Artesanato | Cerâmica fria artesanal e presentes personalizados",
-    description: "Peças artesanais em cerâmica fria feitas à mão: porta-trecos, incensários, cinzeiros decorativos e presentes personalizados sob encomenda.",
-    keywords: "cerâmica fria artesanal, artesanato em cerâmica fria, presentes personalizados, porta-trecos artesanal, incensário artesanal, cinzeiro artesanal, peças artesanais"
+  "site": {
+    "brandName": "Miuartes",
+    "domain": "https://anaviottoartes.com.br",
+    "logo": "/assets/logo-miuartes.jpg",
+    "whatsappDisplay": "(11) 94971-1535",
+    "whatsappNumber": "5511949711535",
+    "whatsappMessage": "Olá! Vim pelo site da Miuartes e gostaria de solicitar um orçamento.",
+    "instagram": "https://www.instagram.com/_anaviottoartes",
+    "instagramHandle": "@_anaviottoartes",
+    "gaId": "G-PEHV8TH4PG"
   },
-  hero: {
-    tag: "Cerâmica fria artesanal • Feito à mão",
-    title: "Peças artesanais para decorar, presentear e encantar.",
-    subtitle: "A Ana Viotto Artesanato cria peças delicadas em cerâmica fria, feitas manualmente, com carinho nos detalhes e personalidade em cada encomenda.",
-    note: "Encomendas personalizadas, peças decorativas e presentes artesanais feitos com cuidado."
+  "navigation": {
+    "products": "Peças",
+    "about": "Sobre",
+    "how": "Como encomendar",
+    "care": "Cuidados",
+    "faq": "Dúvidas",
+    "whatsapp": "Solicitar orçamento"
   },
-  about: {
-    title: "Artesanato com delicadeza e personalidade",
-    subtitle: "Uma página pensada para valorizar o processo artesanal, explicar as encomendas e aproximar cada cliente de uma peça feita com carinho.",
-    cardTitle: "Mais do que uma peça, uma lembrança feita à mão.",
-    cardText: "Cada criação nasce de um processo cuidadoso: escolha do tema, modelagem, pintura, acabamento e carinho em cada detalhe. O resultado são peças únicas, ideais para decoração, presentes e lembranças personalizadas."
+  "seo": {
+    "title": "Miuartes | Peças artesanais personalizadas",
+    "description": "Peças artesanais personalizadas para decoração, presentes e ocasiões especiais, com produção manual e acabamento cuidadoso.",
+    "keywords": "Miuartes, peças artesanais, artesanato personalizado, presentes personalizados, decoração artesanal, lembranças personalizadas"
   },
-  features: [
-    { icon: "👐", title: "Feito à mão", text: "Produção artesanal, sem aparência industrial." },
-    { icon: "🎁", title: "Ótimo para presente", text: "Peças afetivas para datas especiais." },
-    { icon: "🎨", title: "Personalizável", text: "Cores, temas e detalhes combinados antes da produção." },
-    { icon: "🐱", title: "Identidade charmosa", text: "Visual delicado, acolhedor e memorável." }
-  ],
-  productsIntro: {
-    title: "O que você pode encomendar",
-    text: "Uma seleção de peças artesanais em cerâmica fria para decoração, presentes e encomendas personalizadas. Novos modelos podem ser feitos sob encomenda."
+  "hero": {
+    "tag": "Artesanato autoral • Produção sob encomenda",
+    "title": "Peças artesanais com",
+    "accent": "identidade",
+    "titleAfter": ", delicadeza e acabamento cuidadoso.",
+    "subtitle": "A Miuartes desenvolve peças artesanais personalizadas para decoração, presentes e ocasiões especiais, unindo estética delicada, execução cuidadosa e atenção aos detalhes.",
+    "note": "Encomendas personalizadas • peças decorativas • presentes • lembranças",
+    "whatsappButton": "Solicitar orçamento",
+    "instagramButton": "Ver Instagram",
+    "productsButton": "Conhecer as peças"
   },
-  products: [
+  "heroNotes": [
     {
-      title: "Porta-trecos artesanal",
-      description: "Peça artesanal em cerâmica fria, ideal para guardar pequenos objetos, decorar e deixar o ambiente mais delicado.",
-      image: "/assets/porta-trecos.svg",
-      alt: "Porta-trecos artesanal em cerâmica fria"
+      "title": "Identidade visual",
+      "text": "Composição leve, paleta suave e acabamento coerente com a marca."
     },
     {
-      title: "Incensário / cinzeiro cogumelo",
-      description: "Peça artesanal com cogumelo em relevo, feita para decorar e criar um cantinho acolhedor.",
-      image: "/assets/incensario.svg",
-      alt: "Incensário e cinzeiro artesanal de cogumelo"
+      "title": "Produção personalizada",
+      "text": "Tema, cores, medidas e detalhes são definidos antes da execução."
     }
   ],
-  how: {
-    title: "Como funciona a encomenda",
-    subtitle: "Um processo simples para alinhar expectativas, prazo e detalhes antes da produção.",
-    steps: [
-      { title: "Você envia sua ideia", text: "Escolha uma peça da vitrine, veja inspirações no Instagram ou envie uma referência do que deseja." },
-      { title: "Combinamos os detalhes", text: "Tema, cores, tamanho, prazo e valor são definidos antes da produção." },
-      { title: "A peça é produzida", text: "Tudo é feito manualmente, com cuidado no acabamento e nos detalhes." },
-      { title: "Você recebe sua arte", text: "A retirada ou o envio são combinados de acordo com a disponibilidade." }
+  "about": {
+    "title": "Artesanato autoral com",
+    "accent": "identidade",
+    "subtitle": "Uma apresentação visual alinhada à marca, com paleta suave, formas orgânicas e foco na valorização das peças.",
+    "badge": "Sobre a marca",
+    "cardTitle": "Peças desenvolvidas com cuidado e personalidade.",
+    "cardText": "A Miuartes trabalha com peças artesanais personalizadas, desenvolvidas de forma manual e com atenção ao acabamento. Cada encomenda é pensada para atender à proposta, ao uso e à identidade desejada pelo cliente."
+  },
+  "features": [
+    {
+      "icon": "◇",
+      "title": "Estética refinada",
+      "text": "Paleta suave, composição equilibrada e apresentação cuidadosa."
+    },
+    {
+      "icon": "✦",
+      "title": "Personalização",
+      "text": "Temas, nomes, cores, medidas e detalhes definidos previamente."
+    },
+    {
+      "icon": "◌",
+      "title": "Presentes especiais",
+      "text": "Peças pensadas para aniversários, celebrações e ocasiões marcantes."
+    },
+    {
+      "icon": "❧",
+      "title": "Produção manual",
+      "text": "Processo artesanal com atenção a cada etapa e ao acabamento final."
+    }
+  ],
+  "productsIntro": {
+    "title": "Peças em",
+    "accent": "evidência",
+    "text": "Uma seleção de trabalhos que apresenta as possibilidades de personalização, acabamento e uso."
+  },
+  "productLabels": {
+    "defaultBadge": "Produção artesanal",
+    "whatsappButton": "Solicitar orçamento",
+    "instagramButton": "Ver no Instagram"
+  },
+  "products": [
+    {
+      "badge": "Personalizado",
+      "title": "Lembranças personalizadas",
+      "description": "Peças desenvolvidas para aniversários, eventos, celebrações e presentes personalizados.",
+      "image": "/assets/logo-miuartes.jpg",
+      "alt": "Lembrança artesanal personalizada"
+    },
+    {
+      "badge": "Feito à mão",
+      "title": "Peças temáticas",
+      "description": "Criações inspiradas em temas específicos, com composição visual e detalhes definidos em conjunto.",
+      "image": "/assets/logo-miuartes.jpg",
+      "alt": "Peça artesanal temática"
+    },
+    {
+      "badge": "Decoração",
+      "title": "Objetos decorativos",
+      "description": "Peças pensadas para compor ambientes com identidade, delicadeza e acabamento artesanal.",
+      "image": "/assets/logo-miuartes.jpg",
+      "alt": "Objeto decorativo artesanal"
+    }
+  ],
+  "how": {
+    "title": "Como funciona a",
+    "accent": "encomenda",
+    "subtitle": "Um processo claro para definir proposta, prazo, valor e detalhes antes do início da produção.",
+    "steps": [
+      {
+        "title": "Apresente sua proposta",
+        "text": "Envie uma referência, escolha um modelo existente ou descreva a peça desejada."
+      },
+      {
+        "title": "Definição dos detalhes",
+        "text": "Cores, medidas, tema, acabamento, prazo e valor são definidos previamente."
+      },
+      {
+        "title": "Produção da peça",
+        "text": "A produção é realizada manualmente, respeitando o projeto aprovado."
+      },
+      {
+        "title": "Entrega da encomenda",
+        "text": "A forma de entrega ou retirada é combinada conforme a localização e a disponibilidade."
+      }
     ]
   },
-  care: {
-    title: "Cuidados com sua peça artesanal",
-    subtitle: "Peças em cerâmica fria são delicadas e duram mais quando recebem alguns cuidados simples no dia a dia.",
-    items: [
-      { icon: "🧼", title: "Limpeza delicada", text: "Use pano seco ou levemente úmido. Depois, seque a peça imediatamente com um pano macio." },
-      { icon: "💧", title: "Evite água e umidade", text: "Não lave em água corrente, não deixe de molho e evite locais úmidos, chuva ou vapor excessivo." },
-      { icon: "☀️", title: "Proteja do sol e do calor", text: "Evite sol direto, calor intenso, micro-ondas, lava-louças ou contato com fontes de calor." },
-      { icon: "🤲", title: "Manuseie com cuidado", text: "Evite quedas, impactos, atritos e pressão sobre detalhes pequenos ou partes em relevo." },
-      { icon: "🧴", title: "Não use produtos fortes", text: "Evite álcool, alvejantes, amoníaco, produtos abrasivos, palha de aço ou escovas duras." },
-      { icon: "🏡", title: "Guarde em local seguro", text: "Mantenha a peça em local seco, arejado e protegido para preservar pintura, verniz e acabamento." }
-    ],
-    note: "Por ser uma peça artesanal, pequenas variações fazem parte do processo manual. O cuidado correto ajuda a preservar a beleza, os detalhes e a durabilidade da sua peça."
-  },
-  seoSection: {
-    title: "Artesanato em cerâmica fria feito à mão",
-    paragraphs: [
-      "A Ana Viotto Artesanato cria peças artesanais em cerâmica fria para decoração, presentes personalizados e encomendas especiais.",
-      "Cada peça é produzida com cuidado nos detalhes, podendo receber cores, temas e acabamentos personalizados de acordo com a ideia do cliente."
+  "care": {
+    "title": "Cuidados com sua",
+    "accent": "peça",
+    "subtitle": "Orientações simples para preservar a aparência, o acabamento e a durabilidade da peça.",
+    "items": [
+      {
+        "icon": "◯",
+        "title": "Limpeza adequada",
+        "text": "Utilize pano seco ou levemente umedecido, sem produtos abrasivos."
+      },
+      {
+        "icon": "◇",
+        "title": "Evite umidade excessiva",
+        "text": "Não lave em água corrente, não deixe de molho e evite ambientes muito úmidos."
+      },
+      {
+        "icon": "☼",
+        "title": "Proteja do sol e do calor",
+        "text": "Evite exposição prolongada ao sol, calor intenso e contato com fontes de calor."
+      }
     ]
   },
-  faq: [
-    { question: "As peças são prontas ou sob encomenda?", answer: "Algumas peças podem estar disponíveis para pronta entrega, mas a maioria pode ser feita sob encomenda." },
-    { question: "Dá para personalizar?", answer: "Sim. As peças podem ser personalizadas de acordo com a ideia do cliente, incluindo tema, cores, nome, detalhes e estilo." },
-    { question: "Qual é o prazo de produção?", answer: "O prazo depende do tamanho, dos detalhes e da complexidade da peça. Antes de iniciar, a Ana informa o prazo estimado." },
-    { question: "Como faço para pedir?", answer: "Para fazer uma encomenda, chame pelo WhatsApp ou visite o Instagram @_anaviottoartes." }
-  ]
+  "faqIntro": {
+    "title": "Dúvidas",
+    "accent": "frequentes",
+    "subtitle": "Informações importantes sobre personalização, prazo e processo de encomenda."
+  },
+  "faq": [
+    {
+      "question": "As peças podem ser personalizadas?",
+      "answer": "Sim. Tema, cores, nomes, medidas e detalhes podem ser ajustados conforme a viabilidade do projeto."
+    },
+    {
+      "question": "Qual é o prazo de produção?",
+      "answer": "O prazo varia conforme o tamanho, a complexidade da peça e a agenda de produção."
+    },
+    {
+      "question": "Como faço para pedir?",
+      "answer": "Entre em contato pelo WhatsApp ou Instagram e envie uma referência ou descrição da peça desejada."
+    },
+    {
+      "question": "Posso enviar uma referência?",
+      "answer": "Sim. As referências ajudam a definir a proposta, mas o resultado final preserva as características do trabalho artesanal."
+    }
+  ],
+  "cta": {
+    "title": "Solicite uma peça",
+    "accent": "personalizada",
+    "text": "Entre em contato, apresente sua ideia e receba uma proposta de acordo com o projeto desejado.",
+    "whatsappButton": "Solicitar orçamento",
+    "instagramButton": "Ver Instagram"
+  },
+  "footer": {
+    "text": "Miuartes • Peças artesanais personalizadas • Produção sob encomenda"
+  }
 };
+

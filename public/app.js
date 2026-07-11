@@ -1,4 +1,5 @@
-let CONTENT = window.DEFAULT_CONTENT;
+const FALLBACK = window.DEFAULT_CONTENT;
+let CONTENT = FALLBACK;
 
 const escapeHtml = (text = "") => String(text)
   .replaceAll("&", "&amp;")
@@ -11,12 +12,42 @@ function whatsappUrl(content) {
   return `https://wa.me/${content.site.whatsappNumber}?text=${encodeURIComponent(content.site.whatsappMessage)}`;
 }
 
+function applyTheme(theme = {}) {
+  const map = {
+    pink: "--pink",
+    pinkStrong: "--pink-strong",
+    pinkLight: "--pink-light",
+    green: "--green",
+    greenStrong: "--green-strong",
+    cream: "--cream",
+    brown: "--brown",
+    text: "--text",
+    soft: "--soft"
+  };
+
+  for (const [key, cssVar] of Object.entries(map)) {
+    if (theme[key]) {
+      document.documentElement.style.setProperty(cssVar, theme[key]);
+    }
+  }
+}
+
 function updateHead(content) {
-  document.title = content.seo?.title || content.site?.brandName || "Ana Viotto Artesanato";
+  document.title = content.seo?.title || content.site.brandName;
 
   const description = document.querySelector('meta[name="description"]');
   if (description && content.seo?.description) {
     description.setAttribute("content", content.seo.description);
+  }
+
+  const canonical = document.querySelector('link[rel="canonical"]');
+  if (canonical && content.site.domain) {
+    canonical.setAttribute("href", content.site.domain);
+  }
+
+  const favicon = document.getElementById("favicon");
+  if (favicon && content.site.logo) {
+    favicon.setAttribute("href", content.site.logo);
   }
 
   let schema = document.getElementById("schema-org-store");
@@ -30,35 +61,18 @@ function updateHead(content) {
   schema.textContent = JSON.stringify({
     "@context": "https://schema.org",
     "@type": "Store",
-    "name": content.site.brandName,
-    "url": content.site.domain,
-    "description": content.seo.description,
-    "sameAs": [content.site.instagram],
-    "telephone": "+55 11 94971-1535",
-    "areaServed": "Brasil"
-  });
-}
-
-function bindAnalytics() {
-  document.querySelectorAll('a[href*="instagram.com"]').forEach(link => {
-    link.addEventListener("click", () => {
-      if (typeof gtag === "function") {
-        gtag("event", "click_instagram", { event_category: "outbound", event_label: link.href });
-      }
-    });
-  });
-
-  document.querySelectorAll('a[href*="wa.me"]').forEach(link => {
-    link.addEventListener("click", () => {
-      if (typeof gtag === "function") {
-        gtag("event", "click_whatsapp", { event_category: "outbound", event_label: link.href });
-      }
-    });
+    name: content.site.brandName,
+    url: content.site.domain,
+    description: content.seo.description,
+    sameAs: [content.site.instagram],
+    telephone: content.site.whatsappDisplay,
+    areaServed: "Brasil"
   });
 }
 
 function render(content) {
   CONTENT = content;
+  applyTheme(content.theme);
   updateHead(content);
 
   const wpp = whatsappUrl(content);
@@ -68,52 +82,71 @@ function render(content) {
     <header class="topbar">
       <nav class="nav">
         <a class="brand" href="#">
-          <img src="${escapeHtml(content.site.logo)}" alt="Logo ${escapeHtml(content.site.brandName)}" />
+          <img src="${escapeHtml(content.site.logo)}" alt="Logo ${escapeHtml(content.site.brandName)}">
           <span>${escapeHtml(content.site.brandName)}</span>
         </a>
 
         <div class="menu">
-          <a href="#pecas">Peças</a>
-          <a href="#como-funciona">Como encomendar</a>
-          <a href="#cuidados-peca">Cuidados</a>
-          <a href="#duvidas">Dúvidas</a>
-          <a href="${escapeHtml(instagram)}" target="_blank" rel="noopener">Instagram</a>
-          <a class="btn btn-primary" href="${escapeHtml(wpp)}" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+          <a href="#pecas">${escapeHtml(content.navigation.products)}</a>
+          <a href="#sobre">${escapeHtml(content.navigation.about)}</a>
+          <a href="#como">${escapeHtml(content.navigation.how)}</a>
+          <a href="#cuidados">${escapeHtml(content.navigation.care)}</a>
+          <a href="#duvidas">${escapeHtml(content.navigation.faq)}</a>
+          <a class="btn btn-primary" href="${escapeHtml(wpp)}" target="_blank" rel="noopener">
+            ${escapeHtml(content.navigation.whatsapp)}
+          </a>
         </div>
       </nav>
     </header>
 
     <main>
       <section class="hero">
-        <div class="hero-text">
+        <div class="hero-copy">
           <div class="tag">${escapeHtml(content.hero.tag)}</div>
-          <h1>${escapeHtml(content.hero.title)}</h1>
+          <h1>
+            ${escapeHtml(content.hero.title)}
+            <span>${escapeHtml(content.hero.accent)}</span>${escapeHtml(content.hero.titleAfter)}
+          </h1>
           <p>${escapeHtml(content.hero.subtitle)}</p>
 
           <div class="hero-actions">
-            <a class="btn btn-primary" href="${escapeHtml(wpp)}" target="_blank" rel="noopener">Quero fazer uma encomenda</a>
-            <a class="btn btn-secondary" href="${escapeHtml(instagram)}" target="_blank" rel="noopener">Ver Instagram</a>
-            <a class="btn btn-secondary" href="#pecas">Ver peças</a>
+            <a class="btn btn-primary" href="${escapeHtml(wpp)}" target="_blank" rel="noopener">
+              ${escapeHtml(content.hero.whatsappButton)}
+            </a>
+            <a class="btn btn-secondary" href="${escapeHtml(instagram)}" target="_blank" rel="noopener">
+              ${escapeHtml(content.hero.instagramButton)}
+            </a>
+            <a class="btn btn-green" href="#pecas">${escapeHtml(content.hero.productsButton)}</a>
           </div>
 
-          <div class="microcopy">${escapeHtml(content.hero.note)}</div>
+          <div class="micro">${escapeHtml(content.hero.note)}</div>
         </div>
 
         <aside class="logo-card">
           <div class="logo-frame">
-            <img src="${escapeHtml(content.site.logo)}" alt="${escapeHtml(content.site.brandName)}" />
+            <img src="${escapeHtml(content.site.logo)}" alt="Logo ${escapeHtml(content.site.brandName)}">
+          </div>
+
+          <div class="note-row">
+            ${(content.heroNotes || []).map(item => `
+              <div class="note">
+                <strong>${escapeHtml(item.title)}</strong>
+                ${escapeHtml(item.text)}
+              </div>
+            `).join("")}
           </div>
         </aside>
       </section>
 
       <section id="sobre">
         <div class="section-title">
-          <h2>${escapeHtml(content.about.title)}</h2>
+          <h2>${escapeHtml(content.about.title)} <span>${escapeHtml(content.about.accent)}</span></h2>
           <p>${escapeHtml(content.about.subtitle)}</p>
         </div>
 
         <div class="about-grid">
-          <div class="about-card">
+          <div class="card">
+            <span class="pill">${escapeHtml(content.about.badge)}</span>
             <h3>${escapeHtml(content.about.cardTitle)}</h3>
             <p>${escapeHtml(content.about.cardText)}</p>
           </div>
@@ -121,7 +154,7 @@ function render(content) {
           <div class="features">
             ${(content.features || []).map(item => `
               <div class="feature">
-                <span>${escapeHtml(item.icon)}</span>
+                <div class="feature-icon">${escapeHtml(item.icon)}</div>
                 <strong>${escapeHtml(item.title)}</strong>
                 <small>${escapeHtml(item.text)}</small>
               </div>
@@ -132,21 +165,27 @@ function render(content) {
 
       <section id="pecas">
         <div class="section-title">
-          <h2>${escapeHtml(content.productsIntro.title)}</h2>
+          <h2>${escapeHtml(content.productsIntro.title)} <span>${escapeHtml(content.productsIntro.accent)}</span></h2>
           <p>${escapeHtml(content.productsIntro.text)}</p>
         </div>
 
         <div class="products">
           ${(content.products || []).map(product => `
-            <article class="product-card">
-              <img src="${escapeHtml(product.image)}" alt="${escapeHtml(product.alt || product.title)}" loading="lazy" />
+            <article class="product">
+              <div class="product-image">
+                <img src="${escapeHtml(product.image)}" alt="${escapeHtml(product.alt || product.title)}" loading="lazy">
+              </div>
               <div class="product-body">
-                <span class="product-badge">Cerâmica fria artesanal</span>
+                <span class="pill">${escapeHtml(product.badge || content.productLabels.defaultBadge)}</span>
                 <h3>${escapeHtml(product.title)}</h3>
                 <p>${escapeHtml(product.description)}</p>
                 <div class="product-actions">
-                  <a class="btn btn-secondary" href="${escapeHtml(wpp)}" target="_blank" rel="noopener">Encomendar pelo WhatsApp</a>
-                  <a class="btn btn-secondary" href="${escapeHtml(instagram)}" target="_blank" rel="noopener">Ver no Instagram</a>
+                  <a class="btn btn-secondary" href="${escapeHtml(wpp)}" target="_blank" rel="noopener">
+                    ${escapeHtml(content.productLabels.whatsappButton)}
+                  </a>
+                  <a class="btn btn-secondary" href="${escapeHtml(instagram)}" target="_blank" rel="noopener">
+                    ${escapeHtml(content.productLabels.instagramButton)}
+                  </a>
                 </div>
               </div>
             </article>
@@ -154,9 +193,9 @@ function render(content) {
         </div>
       </section>
 
-      <section id="como-funciona">
+      <section id="como">
         <div class="section-title">
-          <h2>${escapeHtml(content.how.title)}</h2>
+          <h2>${escapeHtml(content.how.title)} <span>${escapeHtml(content.how.accent)}</span></h2>
           <p>${escapeHtml(content.how.subtitle)}</p>
         </div>
 
@@ -171,38 +210,27 @@ function render(content) {
         </div>
       </section>
 
-      <section id="cuidados-peca">
+      <section id="cuidados">
         <div class="section-title">
-          <h2>${escapeHtml(content.care.title)}</h2>
+          <h2>${escapeHtml(content.care.title)} <span>${escapeHtml(content.care.accent)}</span></h2>
           <p>${escapeHtml(content.care.subtitle)}</p>
         </div>
 
         <div class="care-grid">
           ${(content.care.items || []).map(item => `
             <div class="care-card">
-              <span>${escapeHtml(item.icon)}</span>
+              <div class="care-icon">${escapeHtml(item.icon)}</div>
               <strong>${escapeHtml(item.title)}</strong>
               <p>${escapeHtml(item.text)}</p>
             </div>
           `).join("")}
         </div>
-
-        <div class="care-note">
-          <strong>Importante:</strong> ${escapeHtml(content.care.note)}
-        </div>
-      </section>
-
-      <section id="artesanato-ceramica-fria">
-        <div class="seo-content">
-          <h2>${escapeHtml(content.seoSection.title)}</h2>
-          ${(content.seoSection.paragraphs || []).map(p => `<p>${escapeHtml(p)}</p>`).join("")}
-        </div>
       </section>
 
       <section id="duvidas">
         <div class="section-title">
-          <h2>Dúvidas frequentes</h2>
-          <p>Essas respostas reduzem dúvidas repetidas e ajudam você a entender melhor como funciona a encomenda.</p>
+          <h2>${escapeHtml(content.faqIntro.title)} <span>${escapeHtml(content.faqIntro.accent)}</span></h2>
+          <p>${escapeHtml(content.faqIntro.subtitle)}</p>
         </div>
 
         <div class="faq">
@@ -218,34 +246,62 @@ function render(content) {
       <div class="cta">
         <div class="cta-inner">
           <div>
-            <h2>Vamos criar uma peça especial?</h2>
-            <p>Chame pelo WhatsApp ou Instagram, envie sua ideia e combine uma encomenda artesanal feita com carinho.</p>
+            <h2>${escapeHtml(content.cta.title)} <span>${escapeHtml(content.cta.accent)}</span></h2>
+            <p>${escapeHtml(content.cta.text)}</p>
           </div>
-          <div class="product-actions">
-            <a class="btn" href="${escapeHtml(wpp)}" target="_blank" rel="noopener">Chamar no WhatsApp</a>
-            <a class="btn" href="${escapeHtml(instagram)}" target="_blank" rel="noopener">Ver Instagram</a>
+
+          <div>
+            <a class="btn" href="${escapeHtml(wpp)}" target="_blank" rel="noopener">
+              ${escapeHtml(content.cta.whatsappButton)}
+            </a>
+            <a class="btn" href="${escapeHtml(instagram)}" target="_blank" rel="noopener">
+              ${escapeHtml(content.cta.instagramButton)}
+            </a>
           </div>
         </div>
       </div>
     </main>
 
-    <footer>
-      ${escapeHtml(content.site.brandName)} • Cerâmica fria artesanal • WhatsApp: ${escapeHtml(content.site.whatsappDisplay)} • Instagram: ${escapeHtml(content.site.instagramHandle)}
-    </footer>
+    <footer>${escapeHtml(content.footer.text)}</footer>
   `;
 
   bindAnalytics();
 }
 
+function bindAnalytics() {
+  document.querySelectorAll('a[href*="instagram.com"]').forEach(link => {
+    link.addEventListener("click", () => {
+      if (typeof gtag === "function") {
+        gtag("event", "click_instagram", {
+          event_category: "outbound",
+          event_label: link.href
+        });
+      }
+    });
+  });
+
+  document.querySelectorAll('a[href*="wa.me"]').forEach(link => {
+    link.addEventListener("click", () => {
+      if (typeof gtag === "function") {
+        gtag("event", "click_whatsapp", {
+          event_category: "outbound",
+          event_label: link.href
+        });
+      }
+    });
+  });
+}
+
 async function loadContent() {
   try {
     const response = await fetch("/api/content", { cache: "no-store" });
-    if (!response.ok) throw new Error("Erro ao carregar conteúdo");
+    if (!response.ok) throw new Error("Falha ao carregar conteúdo.");
     const payload = await response.json();
-    render(payload.content || window.DEFAULT_CONTENT);
-  } catch (error) {
-    render(window.DEFAULT_CONTENT);
+    render(payload.content || FALLBACK);
+  } catch {
+    render(FALLBACK);
   }
 }
 
 loadContent();
+

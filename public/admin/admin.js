@@ -1,7 +1,7 @@
-let content = structuredClone(window.DEFAULT_CONTENT);
+let content = JSON.parse(JSON.stringify(window.DEFAULT_CONTENT));
 
-const statusEl = document.getElementById("status");
 const form = document.getElementById("form");
+const statusEl = document.getElementById("status");
 
 const escapeHtml = (text = "") => String(text)
   .replaceAll("&", "&amp;")
@@ -13,101 +13,243 @@ function setStatus(message) {
   statusEl.textContent = message;
 }
 
-function get(path) {
-  return path.split(".").reduce((obj, key) => obj && obj[key], content);
+function getPath(path) {
+  return path.split(".").reduce((obj, key) => obj?.[key], content);
 }
 
-function set(path, value) {
-  const parts = path.split(".");
+function setPath(path, value) {
+  const keys = path.split(".");
   let obj = content;
-  for (let i = 0; i < parts.length - 1; i++) obj = obj[parts[i]];
-  obj[parts[parts.length - 1]] = value;
+
+  for (let i = 0; i < keys.length - 1; i++) {
+    obj = obj[keys[i]];
+  }
+
+  obj[keys[keys.length - 1]] = value;
 }
 
-function field(path, label, type = "text") {
-  const value = get(path) || "";
+function field(path, label, type = "text", help = "") {
+  const value = getPath(path) ?? "";
+  const helpHtml = help ? `<small class="help">${escapeHtml(help)}</small>` : "";
+
   if (type === "textarea") {
-    return `<label>${label}</label><textarea data-path="${path}">${escapeHtml(value)}</textarea>`;
+    return `
+      <label>${escapeHtml(label)}</label>
+      <textarea data-path="${escapeHtml(path)}">${escapeHtml(value)}</textarea>
+      ${helpHtml}
+    `;
   }
-  return `<label>${label}</label><input data-path="${path}" value="${escapeHtml(value)}" />`;
+
+  return `
+    <label>${escapeHtml(label)}</label>
+    <input type="${escapeHtml(type)}" data-path="${escapeHtml(path)}" value="${escapeHtml(value)}">
+    ${helpHtml}
+  `;
 }
 
 function bindInputs() {
-  document.querySelectorAll("[data-path]").forEach((input) => {
-    input.addEventListener("input", () => set(input.dataset.path, input.value));
+  document.querySelectorAll("[data-path]").forEach(input => {
+    input.addEventListener("input", () => {
+      setPath(input.dataset.path, input.value);
+    });
   });
 }
 
 function render() {
   form.innerHTML = `
-    <section class="card">
-      <h2>Configurações</h2>
+    <section class="panel">
+      <h2>Identidade da marca</h2>
+      <p>Nome, contatos, domínio e logo principal.</p>
+
       <div class="row">
         <div>${field("site.brandName", "Nome da marca")}</div>
-        <div>${field("site.logo", "Logo / imagem principal")}</div>
+        <div>${field("site.domain", "Domínio principal")}</div>
       </div>
+
+      ${field("site.logo", "Endereço atual do logo")}
+      <img class="preview logo-preview" src="${escapeHtml(content.site.logo)}" alt="Prévia do logo">
+
+      <label>Enviar novo logo</label>
+      <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" onchange="uploadToPath(event, 'site.logo')">
+      <small class="help">O arquivo será salvo no R2. O novo logo será usado no cabeçalho, destaque principal e favicon.</small>
+
       <div class="row">
         <div>${field("site.whatsappDisplay", "WhatsApp visível")}</div>
-        <div>${field("site.whatsappNumber", "WhatsApp com DDI e DDD, só números")}</div>
+        <div>${field("site.whatsappNumber", "WhatsApp com DDI e DDD, somente números")}</div>
       </div>
-      ${field("site.whatsappMessage", "Mensagem automática do WhatsApp")}
+
+      ${field("site.whatsappMessage", "Mensagem automática do WhatsApp", "textarea")}
+
       <div class="row">
         <div>${field("site.instagram", "Link do Instagram")}</div>
         <div>${field("site.instagramHandle", "Usuário do Instagram")}</div>
       </div>
+
+      ${field("site.gaId", "ID do Google Analytics")}
     </section>
 
-    <section class="card">
-      <h2>SEO</h2>
+    <section class="panel">
+      <h2>Cores do site</h2>
+      <p>A dona pode mudar a identidade visual sem alterar o código.</p>
+
+      <div class="color-grid">
+        <div>${field("theme.pink", "Rosa principal", "color")}</div>
+        <div>${field("theme.pinkStrong", "Rosa de destaque", "color")}</div>
+        <div>${field("theme.pinkLight", "Rosa claro", "color")}</div>
+        <div>${field("theme.green", "Verde claro", "color")}</div>
+        <div>${field("theme.greenStrong", "Verde de apoio", "color")}</div>
+        <div>${field("theme.cream", "Fundo creme", "color")}</div>
+        <div>${field("theme.brown", "Títulos", "color")}</div>
+        <div>${field("theme.soft", "Textos secundários", "color")}</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Menu</h2>
+      <p>Textos exibidos no menu superior.</p>
+
+      <div class="row">
+        <div>${field("navigation.products", "Peças")}</div>
+        <div>${field("navigation.about", "Sobre")}</div>
+        <div>${field("navigation.how", "Como encomendar")}</div>
+        <div>${field("navigation.care", "Cuidados")}</div>
+        <div>${field("navigation.faq", "Dúvidas")}</div>
+        <div>${field("navigation.whatsapp", "Botão do WhatsApp")}</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>SEO e Google</h2>
+      <p>Informações usadas por buscadores e compartilhamentos.</p>
+
       ${field("seo.title", "Título para o Google")}
       ${field("seo.description", "Descrição para o Google", "textarea")}
       ${field("seo.keywords", "Palavras-chave")}
     </section>
 
-    <section class="card">
-      <h2>Primeira dobra</h2>
-      ${field("hero.tag", "Etiqueta")}
-      ${field("hero.title", "Título principal", "textarea")}
-      ${field("hero.subtitle", "Subtítulo", "textarea")}
-      ${field("hero.note", "Texto pequeno abaixo dos botões", "textarea")}
+    <section class="panel">
+      <h2>Destaque principal</h2>
+      <p>Primeiro conteúdo exibido ao abrir o site.</p>
+
+      ${field("hero.tag", "Identificação superior")}
+      <div class="row">
+        <div>${field("hero.title", "Título antes do destaque")}</div>
+        <div>${field("hero.accent", "Palavra destacada")}</div>
+      </div>
+      ${field("hero.titleAfter", "Complemento do título")}
+      ${field("hero.subtitle", "Texto principal", "textarea")}
+      ${field("hero.note", "Informação abaixo dos botões")}
+
+      <div class="row">
+        <div>${field("hero.whatsappButton", "Botão WhatsApp")}</div>
+        <div>${field("hero.instagramButton", "Botão Instagram")}</div>
+      </div>
+      ${field("hero.productsButton", "Botão para as peças")}
+
+      <div id="heroNotes"></div>
+      <button type="button" class="btn secondary" onclick="addHeroNote()">Adicionar nota</button>
     </section>
 
-    <section class="card">
-      <h2>Sobre</h2>
-      ${field("about.title", "Título da seção")}
-      ${field("about.subtitle", "Subtítulo da seção", "textarea")}
+    <section class="panel">
+      <h2>Sobre a marca</h2>
+      <p>Apresentação institucional e diferenciais.</p>
+
+      <div class="row">
+        <div>${field("about.title", "Título")}</div>
+        <div>${field("about.accent", "Palavra destacada")}</div>
+      </div>
+
+      ${field("about.subtitle", "Subtítulo", "textarea")}
+      ${field("about.badge", "Etiqueta do card")}
       ${field("about.cardTitle", "Título do card")}
       ${field("about.cardText", "Texto do card", "textarea")}
+
+      <div id="features"></div>
+      <button type="button" class="btn secondary" onclick="addFeature()">Adicionar diferencial</button>
     </section>
 
-    <section class="card">
-      <h2>Produtos</h2>
+    <section class="panel">
+      <h2>Vitrine de peças</h2>
+      <p>Títulos da seção, produtos, descrições e imagens.</p>
+
+      <div class="row">
+        <div>${field("productsIntro.title", "Título")}</div>
+        <div>${field("productsIntro.accent", "Palavra destacada")}</div>
+      </div>
+
+      ${field("productsIntro.text", "Descrição da seção", "textarea")}
+
+      <div class="row">
+        <div>${field("productLabels.defaultBadge", "Etiqueta padrão")}</div>
+        <div>${field("productLabels.whatsappButton", "Botão WhatsApp")}</div>
+      </div>
+      ${field("productLabels.instagramButton", "Botão Instagram")}
+
       <div id="products"></div>
       <button type="button" class="btn secondary" onclick="addProduct()">Adicionar produto</button>
     </section>
 
-    <section class="card">
-      <h2>Como encomendar</h2>
-      ${field("how.title", "Título")}
-      ${field("how.subtitle", "Subtítulo", "textarea")}
+    <section class="panel">
+      <h2>Como funciona a encomenda</h2>
+      <p>Edite os títulos e todas as etapas.</p>
+
+      <div class="row">
+        <div>${field("how.title", "Título")}</div>
+        <div>${field("how.accent", "Palavra destacada")}</div>
+      </div>
+      ${field("how.subtitle", "Descrição", "textarea")}
+
       <div id="steps"></div>
+      <button type="button" class="btn secondary" onclick="addStep()">Adicionar etapa</button>
     </section>
 
-    <section class="card">
-      <h2>Cuidados com a peça</h2>
-      ${field("care.title", "Título")}
-      ${field("care.subtitle", "Subtítulo", "textarea")}
+    <section class="panel">
+      <h2>Cuidados com as peças</h2>
+      <p>Orientações exibidas aos clientes.</p>
+
+      <div class="row">
+        <div>${field("care.title", "Título")}</div>
+        <div>${field("care.accent", "Palavra destacada")}</div>
+      </div>
+      ${field("care.subtitle", "Descrição", "textarea")}
+
       <div id="careItems"></div>
-      ${field("care.note", "Observação final", "textarea")}
+      <button type="button" class="btn secondary" onclick="addCare()">Adicionar cuidado</button>
     </section>
 
-    <section class="card">
+    <section class="panel">
       <h2>Dúvidas frequentes</h2>
+      <p>Edite o título da seção e todas as perguntas.</p>
+
+      <div class="row">
+        <div>${field("faqIntro.title", "Título")}</div>
+        <div>${field("faqIntro.accent", "Palavra destacada")}</div>
+      </div>
+      ${field("faqIntro.subtitle", "Descrição", "textarea")}
+
       <div id="faq"></div>
       <button type="button" class="btn secondary" onclick="addFaq()">Adicionar pergunta</button>
     </section>
 
-    <section class="card">
+    <section class="panel">
+      <h2>Chamada final e rodapé</h2>
+      <p>Última chamada comercial e texto inferior.</p>
+
+      <div class="row">
+        <div>${field("cta.title", "Título")}</div>
+        <div>${field("cta.accent", "Palavra destacada")}</div>
+      </div>
+      ${field("cta.text", "Descrição", "textarea")}
+
+      <div class="row">
+        <div>${field("cta.whatsappButton", "Botão WhatsApp")}</div>
+        <div>${field("cta.instagramButton", "Botão Instagram")}</div>
+      </div>
+
+      ${field("footer.text", "Texto do rodapé")}
+    </section>
+
+    <section class="panel">
       <div class="actions">
         <button type="button" class="btn" onclick="saveContent()">Publicar alterações</button>
         <a class="btn secondary" href="/" target="_blank">Ver site</a>
@@ -115,6 +257,8 @@ function render() {
     </section>
   `;
 
+  renderHeroNotes();
+  renderFeatures();
   renderProducts();
   renderSteps();
   renderCareItems();
@@ -122,145 +266,243 @@ function render() {
   bindInputs();
 }
 
-function renderProducts() {
-  document.getElementById("products").innerHTML = content.products.map((p, index) => `
+function itemFields(items, rootId, renderer) {
+  document.getElementById(rootId).innerHTML = items.map(renderer).join("");
+  bindInputs();
+}
+
+function renderHeroNotes() {
+  itemFields(content.heroNotes || [], "heroNotes", (item, index) => `
     <div class="item">
-      <strong>Produto ${index + 1}</strong>
+      <div class="item-header">
+        <strong>Nota ${index + 1}</strong>
+        <button type="button" class="btn danger" onclick="removeHeroNote(${index})">Remover</button>
+      </div>
+      ${field(`heroNotes.${index}.title`, "Título")}
+      ${field(`heroNotes.${index}.text`, "Texto", "textarea")}
+    </div>
+  `);
+}
 
-      <label>Título</label>
-      <input value="${escapeHtml(p.title)}" oninput="content.products[${index}].title=this.value" />
+function renderFeatures() {
+  itemFields(content.features || [], "features", (item, index) => `
+    <div class="item">
+      <div class="item-header">
+        <strong>Diferencial ${index + 1}</strong>
+        <button type="button" class="btn danger" onclick="removeFeature(${index})">Remover</button>
+      </div>
+      ${field(`features.${index}.icon`, "Ícone ou símbolo")}
+      ${field(`features.${index}.title`, "Título")}
+      ${field(`features.${index}.text`, "Texto", "textarea")}
+    </div>
+  `);
+}
 
-      <label>Descrição</label>
-      <textarea oninput="content.products[${index}].description=this.value">${escapeHtml(p.description)}</textarea>
-
-      <label>Imagem</label>
-      <input value="${escapeHtml(p.image)}" oninput="content.products[${index}].image=this.value" />
-      <img class="preview" src="${escapeHtml(p.image)}" alt="" />
-
-      <label>Enviar nova imagem</label>
-      <input type="file" accept="image/*" onchange="uploadImage(event, ${index})" />
-
-      <label>Texto alternativo da imagem</label>
-      <input value="${escapeHtml(p.alt || "")}" oninput="content.products[${index}].alt=this.value" />
-
-      <div class="actions" style="margin-top:12px">
+function renderProducts() {
+  itemFields(content.products || [], "products", (item, index) => `
+    <div class="item">
+      <div class="item-header">
+        <strong>Produto ${index + 1}</strong>
         <button type="button" class="btn danger" onclick="removeProduct(${index})">Remover</button>
       </div>
+
+      ${field(`products.${index}.badge`, "Etiqueta")}
+      ${field(`products.${index}.title`, "Título")}
+      ${field(`products.${index}.description`, "Descrição", "textarea")}
+      ${field(`products.${index}.image`, "Endereço da imagem")}
+
+      <img class="preview" src="${escapeHtml(item.image)}" alt="Prévia do produto">
+
+      <label>Enviar nova imagem</label>
+      <input type="file" accept="image/jpeg,image/png,image/webp,image/gif"
+        onchange="uploadToPath(event, 'products.${index}.image')">
+
+      ${field(`products.${index}.alt`, "Descrição da imagem para acessibilidade")}
     </div>
-  `).join("");
+  `);
 }
 
 function renderSteps() {
-  document.getElementById("steps").innerHTML = content.how.steps.map((s, index) => `
+  itemFields(content.how.steps || [], "steps", (item, index) => `
     <div class="item">
-      <strong>Passo ${index + 1}</strong>
-      <label>Título</label>
-      <input value="${escapeHtml(s.title)}" oninput="content.how.steps[${index}].title=this.value" />
-      <label>Texto</label>
-      <textarea oninput="content.how.steps[${index}].text=this.value">${escapeHtml(s.text)}</textarea>
+      <div class="item-header">
+        <strong>Etapa ${index + 1}</strong>
+        <button type="button" class="btn danger" onclick="removeStep(${index})">Remover</button>
+      </div>
+      ${field(`how.steps.${index}.title`, "Título")}
+      ${field(`how.steps.${index}.text`, "Texto", "textarea")}
     </div>
-  `).join("");
+  `);
 }
 
 function renderCareItems() {
-  document.getElementById("careItems").innerHTML = content.care.items.map((s, index) => `
+  itemFields(content.care.items || [], "careItems", (item, index) => `
     <div class="item">
-      <strong>Cuidado ${index + 1}</strong>
-      <label>Ícone</label>
-      <input value="${escapeHtml(s.icon)}" oninput="content.care.items[${index}].icon=this.value" />
-      <label>Título</label>
-      <input value="${escapeHtml(s.title)}" oninput="content.care.items[${index}].title=this.value" />
-      <label>Texto</label>
-      <textarea oninput="content.care.items[${index}].text=this.value">${escapeHtml(s.text)}</textarea>
+      <div class="item-header">
+        <strong>Cuidado ${index + 1}</strong>
+        <button type="button" class="btn danger" onclick="removeCare(${index})">Remover</button>
+      </div>
+      ${field(`care.items.${index}.icon`, "Ícone ou símbolo")}
+      ${field(`care.items.${index}.title`, "Título")}
+      ${field(`care.items.${index}.text`, "Texto", "textarea")}
     </div>
-  `).join("");
+  `);
 }
 
 function renderFaq() {
-  document.getElementById("faq").innerHTML = content.faq.map((s, index) => `
+  itemFields(content.faq || [], "faq", (item, index) => `
     <div class="item">
-      <strong>Pergunta ${index + 1}</strong>
-      <label>Pergunta</label>
-      <input value="${escapeHtml(s.question)}" oninput="content.faq[${index}].question=this.value" />
-      <label>Resposta</label>
-      <textarea oninput="content.faq[${index}].answer=this.value">${escapeHtml(s.answer)}</textarea>
-      <div class="actions" style="margin-top:12px">
+      <div class="item-header">
+        <strong>Pergunta ${index + 1}</strong>
         <button type="button" class="btn danger" onclick="removeFaq(${index})">Remover</button>
       </div>
+      ${field(`faq.${index}.question`, "Pergunta")}
+      ${field(`faq.${index}.answer`, "Resposta", "textarea")}
     </div>
-  `).join("");
+  `);
 }
 
-window.addProduct = function () {
+window.addHeroNote = () => {
+  content.heroNotes.push({ title: "Nova nota", text: "Texto da nota." });
+  renderHeroNotes();
+};
+window.removeHeroNote = index => {
+  content.heroNotes.splice(index, 1);
+  renderHeroNotes();
+};
+
+window.addFeature = () => {
+  content.features.push({ icon: "◇", title: "Novo diferencial", text: "Descrição." });
+  renderFeatures();
+};
+window.removeFeature = index => {
+  content.features.splice(index, 1);
+  renderFeatures();
+};
+
+window.addProduct = () => {
   content.products.push({
+    badge: "Produção artesanal",
     title: "Novo produto",
     description: "Descrição do produto.",
-    image: "/assets/logo.svg",
-    alt: "Produto artesanal em cerâmica fria"
+    image: content.site.logo,
+    alt: "Peça artesanal personalizada"
   });
   renderProducts();
 };
-
-window.removeProduct = function (index) {
+window.removeProduct = index => {
   content.products.splice(index, 1);
   renderProducts();
 };
 
-window.addFaq = function () {
+window.addStep = () => {
+  content.how.steps.push({ title: "Nova etapa", text: "Descrição da etapa." });
+  renderSteps();
+};
+window.removeStep = index => {
+  content.how.steps.splice(index, 1);
+  renderSteps();
+};
+
+window.addCare = () => {
+  content.care.items.push({ icon: "◇", title: "Novo cuidado", text: "Orientação." });
+  renderCareItems();
+};
+window.removeCare = index => {
+  content.care.items.splice(index, 1);
+  renderCareItems();
+};
+
+window.addFaq = () => {
   content.faq.push({ question: "Nova pergunta", answer: "Resposta." });
   renderFaq();
 };
-
-window.removeFaq = function (index) {
+window.removeFaq = index => {
   content.faq.splice(index, 1);
   renderFaq();
 };
 
-window.uploadImage = async function (event, productIndex) {
-  const file = event.target.files[0];
+window.uploadToPath = async function(event, path) {
+  const file = event.target.files?.[0];
   if (!file) return;
-
-  const formData = new FormData();
-  formData.append("file", file);
 
   setStatus("Enviando imagem...");
 
-  const response = await fetch("/api/admin/upload-image", {
-    method: "POST",
-    body: formData
-  });
+  const body = new FormData();
+  body.append("file", file);
 
-  const payload = await response.json();
+  try {
+    const response = await fetch("/api/admin/upload-image", {
+      method: "POST",
+      body
+    });
 
-  if (!response.ok || !payload.ok) {
-    setStatus(payload.error || "Erro ao enviar imagem.");
-    return;
+    const payload = await response.json();
+
+    if (!response.ok || !payload.ok) {
+      throw new Error(payload.error || "Não foi possível enviar a imagem.");
+    }
+
+    setPath(path, payload.url);
+    render();
+    setStatus("Imagem enviada. Clique em Publicar alterações para concluir.");
+  } catch (error) {
+    setStatus(error.message || "Erro ao enviar imagem.");
   }
-
-  content.products[productIndex].image = payload.url;
-  setStatus("Imagem enviada. Clique em Publicar alterações para salvar no site.");
-  renderProducts();
 };
 
-window.saveContent = async function () {
-  bindInputs();
-  setStatus("Salvando alterações...");
+window.saveContent = async function() {
+  setStatus("Publicando alterações...");
 
-  const response = await fetch("/api/admin/content", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ content })
-  });
+  try {
+    const response = await fetch("/api/admin/content", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content })
+    });
 
-  const payload = await response.json();
+    const payload = await response.json();
 
-  if (!response.ok || !payload.ok) {
-    setStatus(payload.error || "Erro ao salvar.");
-    return;
+    if (!response.ok || !payload.ok) {
+      throw new Error(payload.error || "Não foi possível salvar.");
+    }
+
+    content = payload.content;
+    render();
+    setStatus("Alterações publicadas com sucesso.");
+  } catch (error) {
+    setStatus(error.message || "Erro ao publicar alterações.");
+  }
+};
+
+function applyMiuartesModel() {
+  const current = content;
+  const model = JSON.parse(JSON.stringify(window.DEFAULT_CONTENT));
+
+  // Preserva contatos e produtos já cadastrados.
+  for (const key of [
+    "domain",
+    "whatsappDisplay",
+    "whatsappNumber",
+    "whatsappMessage",
+    "instagram",
+    "instagramHandle",
+    "gaId"
+  ]) {
+    if (current.site?.[key]) model.site[key] = current.site[key];
   }
 
-  setStatus("Alterações publicadas com sucesso.");
-};
+  if (Array.isArray(current.products) && current.products.length) {
+    model.products = current.products.map((product, index) => ({
+      ...(model.products[index] || model.products[0]),
+      ...product
+    }));
+  }
+
+  content = model;
+  render();
+  setStatus("Modelo Miuartes aplicado no painel. Clique em Publicar alterações para salvar.");
+}
 
 async function loadContent() {
   try {
@@ -268,19 +510,24 @@ async function loadContent() {
     const payload = await response.json();
 
     if (!response.ok) {
-      setStatus(payload.error || "Não foi possível carregar o conteúdo.");
-      render();
-      return;
+      throw new Error(payload.error || "Não foi possível carregar o conteúdo.");
     }
 
     content = payload.content || content;
+    render();
     setStatus("Conteúdo carregado.");
-    render();
   } catch (error) {
-    setStatus("Erro ao carregar. Verifique D1, Access e bindings.");
     render();
+    setStatus(error.message || "Erro ao carregar conteúdo.");
   }
 }
 
 document.getElementById("saveTop").addEventListener("click", saveContent);
+document.getElementById("applyModel").addEventListener("click", () => {
+  if (confirm("Aplicar o novo modelo Miuartes? Contatos e produtos existentes serão preservados.")) {
+    applyMiuartesModel();
+  }
+});
+
 loadContent();
+
